@@ -10,7 +10,7 @@ export default function NavBar() {
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-card-border bg-white/95 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <a href="/" className="text-xl font-bold gradient-text tracking-tight">SnapClip</a>
+        <a href="/" className="text-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent tracking-tight">SnapClip</a>
         <div className="flex items-center gap-2 sm:gap-4">
           <a href="/create" className="text-sm text-muted hover:text-foreground transition-colors font-medium">만들기</a>
           {user && (
@@ -27,7 +27,7 @@ export default function NavBar() {
                 className="flex items-center gap-2 text-sm"
                 aria-label="사용자 메뉴"
               >
-                <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">
                   {user.user_metadata?.full_name?.[0] || user.email?.[0]?.toUpperCase() || "U"}
                 </div>
               </button>
@@ -50,7 +50,7 @@ export default function NavBar() {
               )}
             </div>
           ) : (
-            <a href="/login" className="text-sm px-5 py-1.5 rounded-lg bg-ig-blue text-white font-semibold hover:bg-ig-blue/90 transition-colors">
+            <a href="/login" className="text-sm px-5 py-1.5 rounded-lg bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold hover:opacity-90 transition-all">
               로그인
             </a>
           )}

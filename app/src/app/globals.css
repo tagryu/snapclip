@@ -12,10 +12,13 @@
   --border: #e5e7eb;
   --border-light: #f3f4f6;
   
-  /* Brand Color - Blue */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-light: #dbeafe;
+  /* Brand Color - Instagram Gradient */
+  --primary: #f09433;
+  --primary-hover: #dc2743;
+  --primary-light: #fef3f2;
+  
+  /* Instagram Gradient */
+  --insta-gradient: linear-gradient(to right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
   
   --font-sans: "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
 }

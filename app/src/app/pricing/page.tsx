@@ -74,7 +74,7 @@ export default function PricingPage() {
             💳 간편한 결제, 언제든 해지
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-            딱 맞는 <span className="text-blue-600">요금제</span>를 선택하세요
+            딱 맞는 <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">요금제</span>를 선택하세요
           </h1>
           <p className="text-gray-600 text-xl max-w-2xl mx-auto text-balance">
             무료로 시작하고, 필요할 때 업그레이드하세요
@@ -104,7 +104,7 @@ export default function PricingPage() {
                 <h3 className={`text-2xl font-bold mb-2 ${plan.highlight ? "text-white" : "text-gray-900"}`}>
                   {plan.name}
                 </h3>
-                <p className={`text-sm mb-6 ${plan.highlight ? "text-blue-100" : "text-gray-600"}`}>
+                <p className={`text-sm mb-6 ${plan.highlight ? "text-white/90" : "text-gray-600"}`}>
                   {plan.desc}
                 </p>
                 
@@ -114,22 +114,22 @@ export default function PricingPage() {
                     <span className={`text-5xl font-bold ${plan.highlight ? "text-white" : "text-gray-900"}`}>
                       {plan.price}
                     </span>
-                    <span className={`text-lg ${plan.highlight ? "text-blue-100" : "text-gray-600"}`}>/월</span>
+                    <span className={`text-lg ${plan.highlight ? "text-white/90" : "text-gray-600"}`}>/월</span>
                   </div>
                 </div>
                 
-                <p className={`text-sm font-semibold mb-8 ${plan.highlight ? "text-blue-100" : "text-blue-600"}`}>
+                <p className={`text-sm font-semibold mb-8 ${plan.highlight ? "text-white/95" : "bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent"}`}>
                   영상 {plan.videos}
                 </p>
                 
                 {/* Features */}
                 <ul className="space-y-4 mb-8">
                   {plan.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-3 text-sm ${plan.highlight ? "text-blue-50" : "text-gray-600"}`}>
+                    <li key={f} className={`flex items-start gap-3 text-sm ${plan.highlight ? "text-white/95" : "text-gray-600"}`}>
                       <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                        plan.highlight ? "bg-white/20" : "bg-blue-50"
+                        plan.highlight ? "bg-white/20" : "bg-gradient-to-r from-pink-50 to-purple-50"
                       }`}>
-                        <svg className={`w-3 h-3 ${plan.highlight ? "text-white" : "text-blue-600"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className={`w-3 h-3 ${plan.highlight ? "text-white" : "text-pink-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
@@ -144,14 +144,14 @@ export default function PricingPage() {
                   disabled={loading !== null}
                   className={`w-full py-4 rounded-xl font-semibold text-base transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                     plan.highlight
-                      ? "bg-white text-blue-600 hover:bg-blue-50"
-                      : "bg-blue-600 text-white hover:bg-blue-700 border border-transparent"
+                      ? "bg-white text-pink-600 hover:bg-pink-50"
+                      : "bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:opacity-90 border-0"
                   }`}
                 >
                   {loading === plan.planId ? (
                     <span className="inline-flex items-center gap-2">
                       <div className={`w-4 h-4 border-2 rounded-full animate-spin ${
-                        plan.highlight ? "border-blue-600/30 border-t-blue-600" : "border-white/30 border-t-white"
+                        plan.highlight ? "border-pink-600/30 border-t-pink-600" : "border-white/30 border-t-white"
                       }`} />
                       처리 중...
                     </span>
@@ -190,8 +190,8 @@ export default function PricingPage() {
             <div className="hidden sm:block w-px h-8 bg-gray-200" />
             
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 flex items-center justify-center">
+                <svg className="w-5 h-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
@@ -253,7 +253,7 @@ export default function PricingPage() {
               </p>
               <a
                 href="/create"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 transition-colors shadow-lg"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold text-lg hover:opacity-90 transition-all shadow-lg"
               >
                 <span>무료로 시작하기</span>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

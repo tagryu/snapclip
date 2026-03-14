@@ -229,7 +229,7 @@ export default function CreatePage() {
         <div className="max-w-2xl mx-auto">
           {/* Success Header */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 border border-blue-200 mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 mb-6">
               <span className="text-4xl">🎉</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-3">영상이 완성되었어요!</h1>
@@ -241,12 +241,12 @@ export default function CreatePage() {
           {/* AI Copy */}
           <div className="bg-white rounded-2xl p-6 my-6 border border-gray-200 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-sm font-semibold text-blue-600">✨ AI 생성 카피</span>
+              <span className="text-sm font-semibold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">✨ AI 생성 카피</span>
             </div>
             <p className="text-lg font-medium leading-relaxed text-gray-900 mb-4">&ldquo;{generatedCopy}&rdquo;</p>
             <button
               onClick={() => { navigator.clipboard.writeText(generatedCopy); toast.success("카피가 복사되었습니다!"); }}
-              className="text-sm text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1"
+              className="text-sm text-pink-600 hover:text-pink-700 transition-colors inline-flex items-center gap-1"
             >
               <span>📋</span> 카피 복사하기
             </button>
@@ -263,7 +263,7 @@ export default function CreatePage() {
             <a
               href={generatedVideoUrl}
               download={`${productName || 'snapclip'}_video.mp4`}
-              className="flex-1 py-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors text-center inline-flex items-center justify-center gap-2 shadow-sm"
+              className="flex-1 py-4 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold hover:opacity-90 transition-all text-center inline-flex items-center justify-center gap-2 shadow-sm"
             >
               <span>📥</span> 다운로드
             </a>
@@ -292,7 +292,7 @@ export default function CreatePage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900">
-            영상 <span className="text-blue-600">만들기</span>
+            영상 <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">만들기</span>
           </h1>
           <p className="text-gray-600">상품 사진을 업로드하고 스타일을 선택하세요</p>
         </div>
@@ -303,14 +303,14 @@ export default function CreatePage() {
             <div key={step} className="flex items-center">
               <div className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold text-sm transition-all ${
                 currentStep >= step 
-                  ? "bg-blue-600 text-white" 
+                  ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white" 
                   : "bg-white border border-gray-200 text-gray-400"
               }`}>
                 {step}
               </div>
               {step < 3 && (
                 <div className={`w-12 md:w-20 h-0.5 mx-1 transition-all ${
-                  currentStep > step ? "bg-blue-600" : "bg-gray-200"
+                  currentStep > step ? "bg-gradient-to-r from-pink-500 to-purple-600" : "bg-gray-200"
                 }`} />
               )}
             </div>
@@ -318,8 +318,8 @@ export default function CreatePage() {
         </div>
 
         {!user && (
-          <div className="mb-8 p-4 rounded-xl bg-blue-50 border border-blue-200 text-sm text-center">
-            <a href="/login" className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">로그인</a>
+          <div className="mb-8 p-4 rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 text-sm text-center">
+            <a href="/login" className="text-pink-600 font-semibold hover:text-pink-700 transition-colors">로그인</a>
             <span className="text-gray-600">하면 생성한 영상을 저장하고 관리할 수 있어요</span>
           </div>
         )}
@@ -330,7 +330,7 @@ export default function CreatePage() {
             {/* Step 1: Image Upload */}
             <section>
               <div className="flex items-center gap-2 mb-4">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-sm font-bold border border-blue-200">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 text-sm font-bold border border-pink-200">
                   1
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900">
@@ -350,8 +350,8 @@ export default function CreatePage() {
                   errors.images 
                     ? "border-red-300 bg-red-50" 
                     : dragOver 
-                    ? "border-blue-500 bg-blue-50" 
-                    : "border-gray-300 bg-white hover:border-blue-400"
+                    ? "border-pink-500 bg-pink-50" 
+                    : "border-gray-300 bg-white hover:border-pink-400"
                 }`}
                 onClick={() => document.getElementById("file-input")?.click()}
               >
@@ -393,7 +393,7 @@ export default function CreatePage() {
             <section>
               <div className="flex items-center gap-2 mb-4">
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold transition-all border ${
-                  currentStep >= 2 ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-white text-gray-400 border-gray-200"
+                  currentStep >= 2 ? "bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 border-pink-200" : "bg-white text-gray-400 border-gray-200"
                 }`}>
                   2
                 </div>
@@ -410,7 +410,7 @@ export default function CreatePage() {
                     maxLength={50}
                     aria-label="상품명"
                     aria-invalid={!!errors.productName}
-                    className={`w-full px-4 py-3.5 rounded-xl bg-white border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all ${
+                    className={`w-full px-4 py-3.5 rounded-xl bg-white border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition-all ${
                       errors.productName ? "border-red-300" : "border-gray-200"
                     }`}
                   />
@@ -422,7 +422,7 @@ export default function CreatePage() {
                   onChange={(e) => setProductPrice(e.target.value)}
                   placeholder="가격 (예: 29,900원)"
                   aria-label="가격"
-                  className="w-full px-4 py-3.5 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full px-4 py-3.5 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition-all"
                 />
                 
                 <input
@@ -430,7 +430,7 @@ export default function CreatePage() {
                   onChange={(e) => setTags(e.target.value)}
                   placeholder="특징 태그 (예: 가볍다, 방수, 친환경)"
                   aria-label="특징 태그"
-                  className="w-full px-4 py-3.5 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full px-4 py-3.5 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition-all"
                 />
               </div>
             </section>
@@ -442,7 +442,7 @@ export default function CreatePage() {
             <section>
               <div className="flex items-center gap-2 mb-4">
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold transition-all border ${
-                  currentStep >= 3 ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-white text-gray-400 border-gray-200"
+                  currentStep >= 3 ? "bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 border-pink-200" : "bg-white text-gray-400 border-gray-200"
                 }`}>
                   3
                 </div>
@@ -458,12 +458,12 @@ export default function CreatePage() {
                     onClick={() => { setSelectedTemplate(t.id); setCurrentStep(Math.max(currentStep, 3)); }}
                     className={`p-3 rounded-xl text-center transition-all border ${
                       selectedTemplate === t.id
-                        ? "bg-blue-50 border-blue-500 shadow-sm"
-                        : "bg-white border-gray-200 hover:border-blue-300"
+                        ? "bg-gradient-to-r from-pink-50 to-purple-50 border-pink-500 shadow-sm"
+                        : "bg-white border-gray-200 hover:border-pink-300"
                     }`}
                   >
                     <div className={`w-full aspect-[9/16] rounded-lg bg-gray-100 mb-2 flex items-center justify-center text-2xl border ${
-                      selectedTemplate === t.id ? "border-blue-200" : "border-gray-200"
+                      selectedTemplate === t.id ? "border-pink-200" : "border-gray-200"
                     }`}>
                       {t.emoji}
                     </div>
@@ -482,13 +482,13 @@ export default function CreatePage() {
                     onClick={() => setSelectedRatio(r.id)}
                     className={`flex-1 p-4 rounded-xl text-center transition-all border ${
                       selectedRatio === r.id
-                        ? "bg-blue-50 border-blue-500"
-                        : "bg-white border-gray-200 hover:border-blue-300"
+                        ? "bg-gradient-to-r from-pink-50 to-purple-50 border-pink-500"
+                        : "bg-white border-gray-200 hover:border-pink-300"
                     }`}
                   >
                     <div className="flex justify-center mb-3">
                       <div
-                        className={`border-2 rounded transition-all ${selectedRatio === r.id ? "border-blue-500" : "border-gray-300"}`}
+                        className={`border-2 rounded transition-all ${selectedRatio === r.id ? "border-pink-500" : "border-gray-300"}`}
                         style={{ width: r.w * 0.4, height: r.h * 0.4 }}
                       />
                     </div>
@@ -506,7 +506,7 @@ export default function CreatePage() {
           <button
             onClick={handleGenerate}
             disabled={images.length === 0}
-            className="w-full py-5 rounded-xl bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center justify-center gap-2 shadow-lg"
+            className="w-full py-5 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-bold text-lg hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 inline-flex items-center justify-center gap-2 shadow-lg"
           >
             <span>✨</span>
             <span>영상 만들기</span>

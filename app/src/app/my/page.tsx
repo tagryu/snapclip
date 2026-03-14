@@ -82,7 +82,7 @@ export default function MyPage() {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center text-white text-3xl font-bold ring-4 ring-blue-100 shadow-lg">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold ring-4 ring-pink-100 shadow-lg">
                 {user.user_metadata?.full_name?.[0] || user.email?.[0]?.toUpperCase() || "U"}
               </div>
               <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-green-500 border-4 border-white flex items-center justify-center">
@@ -100,17 +100,17 @@ export default function MyPage() {
               {/* Stats */}
               <div className="flex items-center justify-center md:justify-start gap-6">
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{projects.length}</p>
+                  <p className="text-2xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">{projects.length}</p>
                   <p className="text-xs text-gray-500">영상</p>
                 </div>
                 <div className="w-px h-10 bg-gray-200" />
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{credits.credits_used}</p>
+                  <p className="text-2xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">{credits.credits_used}</p>
                   <p className="text-xs text-gray-500">사용</p>
                 </div>
                 <div className="w-px h-10 bg-gray-200" />
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{credits.credits_limit - credits.credits_used}</p>
+                  <p className="text-2xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">{credits.credits_limit - credits.credits_used}</p>
                   <p className="text-xs text-gray-500">남음</p>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export default function MyPage() {
                 onClick={() => credits.plan === "free" && setShowUpgrade(true)}
                 className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                   credits.plan === "free"
-                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
+                    ? "bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:opacity-90 shadow-sm"
                     : "bg-gray-100 border border-gray-200 text-gray-700"
                 }`}
               >
@@ -142,7 +142,7 @@ export default function MyPage() {
             
             <div className="relative w-full h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
               <div
-                className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-full transition-all duration-500"
                 style={{ width: `${usagePercent}%` }}
               />
             </div>
@@ -172,7 +172,7 @@ export default function MyPage() {
               </p>
               <a
                 href="/create"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors shadow-lg"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold hover:opacity-90 transition-all shadow-lg"
               >
                 <span>✨</span>
                 <span>영상 만들기</span>
@@ -185,15 +185,15 @@ export default function MyPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {/* New Video Card */}
               <div
-                className="aspect-square border-2 border-dashed border-gray-300 bg-white rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                className="aspect-square border-2 border-dashed border-gray-300 bg-white rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-pink-500 hover:bg-pink-50 transition-all group"
                 role="button"
                 tabIndex={0}
                 aria-label="새 영상 만들기"
                 onClick={() => (window.location.href = "/create")}
                 onKeyDown={(e) => { if (e.key === "Enter") window.location.href = "/create"; }}
               >
-                <div className="w-16 h-16 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center mb-3 group-hover:bg-blue-100 transition-colors">
-                  <span className="text-3xl text-blue-600">+</span>
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 flex items-center justify-center mb-3 group-hover:bg-pink-100 transition-colors">
+                  <span className="text-3xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">+</span>
                 </div>
                 <span className="text-sm font-semibold text-gray-600 group-hover:text-gray-900 transition-colors">
                   새 영상
@@ -204,7 +204,7 @@ export default function MyPage() {
               {projects.map((item) => (
                 <div
                   key={item.id}
-                  className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer"
+                  className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-pink-300 hover:shadow-lg transition-all duration-300 cursor-pointer"
                 >
                   {/* Thumbnail */}
                   <div className="aspect-square bg-gray-100 flex items-center justify-center relative overflow-hidden">
@@ -216,7 +216,7 @@ export default function MyPage() {
                     ) : item.status === "failed" ? (
                       <span className="text-5xl opacity-40">❌</span>
                     ) : (
-                      <div className="w-12 h-12 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                      <div className="w-12 h-12 border-2 border-pink-600 border-t-transparent rounded-full animate-spin" />
                     )}
                     
                     {/* Watermark Badge */}
@@ -240,7 +240,7 @@ export default function MyPage() {
                   
                   {/* Info */}
                   <div className="p-4 bg-white">
-                    <p className="text-sm font-semibold truncate text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                    <p className="text-sm font-semibold truncate text-gray-900 mb-1 group-hover:text-pink-600 transition-colors">
                       {item.product_name}
                     </p>
                     <p className="text-xs text-gray-500">
@@ -257,7 +257,7 @@ export default function MyPage() {
         <div className="grid md:grid-cols-3 gap-4">
           <a
             href="/create"
-            className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all group shadow-sm"
+            className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-pink-300 hover:bg-pink-50 transition-all group shadow-sm"
           >
             <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">✨</div>
             <h3 className="font-semibold text-gray-900 mb-1">영상 만들기</h3>
@@ -266,7 +266,7 @@ export default function MyPage() {
           
           <a
             href="/pricing"
-            className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all group shadow-sm"
+            className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-pink-300 hover:bg-pink-50 transition-all group shadow-sm"
           >
             <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">💎</div>
             <h3 className="font-semibold text-gray-900 mb-1">요금제</h3>

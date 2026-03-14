@@ -51,7 +51,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo & Welcome */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-600 mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 mb-6 shadow-lg">
             <span className="text-4xl">✨</span>
           </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-4">SnapClip</h1>
@@ -126,11 +126,11 @@ export default function LoginPage() {
         {/* Terms */}
         <p className="text-center text-xs text-gray-500 mt-8 px-4">
           계속하면{" "}
-          <a href="/terms" className="text-blue-600 hover:text-blue-700 underline transition-colors">
+          <a href="/terms" className="text-pink-600 hover:text-pink-700 underline transition-colors">
             이용약관
           </a>{" "}
           및{" "}
-          <a href="/privacy" className="text-blue-600 hover:text-blue-700 underline transition-colors">
+          <a href="/privacy" className="text-pink-600 hover:text-pink-700 underline transition-colors">
             개인정보처리방침
           </a>
           에 동의하게 됩니다.
