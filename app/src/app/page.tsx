@@ -8,7 +8,7 @@ export default function Home() {
   const demos = [
     { category: "패션", product: "올리브 니트 스웨터", beforeImg: "/demos/sweater-original.png", video: "/demos/sweater-shorts.mp4" },
     { category: "패션", product: "라이트워시 데님", beforeImg: "/demos/jeans-original.png", video: "/demos/jeans-shorts.mp4" },
-    { category: "패션", product: "AI 영상 클립", beforeImg: "/demos/sweater-original.png", video: "/demos/sweater-veo.mp4" },
+    { category: "패션", product: "트렌치코트", beforeImg: "/demos/trench-original.png", video: "/demos/trench-shorts.mp4" },
   ];
 
   const plans = [
@@ -153,11 +153,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Sweater Veo Single Clip */}
+              {/* Trench Coat Demo */}
               <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
                 <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-gray-100">
                   <video
-                    src="/demos/sweater-veo.mp4"
+                    src="/demos/trench-shorts.mp4"
                     autoPlay
                     loop
                     muted
@@ -165,7 +165,7 @@ export default function Home() {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">AI 영상 클립</span>
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">트렌치코트</span>
                   </div>
                 </div>
               </div>
