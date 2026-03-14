@@ -156,7 +156,7 @@ export default function NavBar() {
             </div>
           ) : (
             <a 
-              href="/auth/login" 
+              href="/login" 
               className="text-sm px-5 py-2 rounded-lg bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold hover:opacity-90 transition-all shadow-sm"
             >
               로그인

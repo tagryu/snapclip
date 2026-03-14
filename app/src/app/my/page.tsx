@@ -31,7 +31,7 @@ export default function MyPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      window.location.href = "/auth/login";
+      window.location.href = "/login";
       return;
     }
 

@@ -104,23 +104,10 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">또는</span>
-            </div>
+          {/* 첫 가입 혜택 */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">🎁 첫 가입 시 <span className="font-semibold text-pink-600">1크레딧 무료</span> 제공</p>
           </div>
-
-          {/* Skip Login */}
-          <a
-            href="/create"
-            className="block w-full py-4 text-center rounded-xl bg-gray-50 border border-gray-200 text-gray-600 font-medium hover:text-gray-900 hover:bg-gray-100 hover:border-gray-300 transition-all"
-          >
-            로그인 없이 체험하기
-          </a>
         </div>
 
         {/* Terms */}
