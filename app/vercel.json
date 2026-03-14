@@ -2,8 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "env": {
-    "SNAPCLIP_SERVER_URL": "@snapclip-server-url"
-  }
+  "outputDirectory": ".next"
 }
