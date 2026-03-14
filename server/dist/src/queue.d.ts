@@ -1,5 +1,4 @@
-import { Queue, Worker } from 'bullmq';
-export declare const videoQueue: Queue<any, any, string, any, any, string>;
+import type { PipelineInput } from '../pipeline/types';
 export declare const jobStatus: Map<string, {
     status: "pending" | "processing" | "done" | "failed";
     progress: number;
@@ -7,5 +6,13 @@ export declare const jobStatus: Map<string, {
     result?: any;
     error?: string;
 }>;
-export declare function startWorker(): Worker<any, any, string>;
+export declare const videoQueue: {
+    add(_name: string, data: PipelineInput, opts?: {
+        jobId?: string;
+        [key: string]: any;
+    }): Promise<{
+        id: string;
+    }>;
+};
+export declare function startWorker(): void;
 //# sourceMappingURL=queue.d.ts.map

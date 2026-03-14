@@ -10,11 +10,18 @@ export interface PipelineInput {
     voiceEnabled: boolean;
     backgroundStyle: 'dark' | 'light' | 'pink' | 'blue' | 'green';
 }
+export interface ProductAnalysisResult {
+    category: string;
+    color: string;
+    material: string;
+    suggestedScenes: string[];
+}
 export interface PipelineOutput {
     videoUrl: string;
     thumbnailUrl: string;
     durationSec: number;
     aiCopy: AICopy;
+    productAnalysis?: ProductAnalysisResult;
 }
 export interface AICopy {
     lines: string[];

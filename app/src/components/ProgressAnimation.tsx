@@ -18,9 +18,21 @@ export default function ProgressAnimation({ currentStage, progress: externalProg
   const [stageIndex, setStageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
+  const stageMap: Record<string, string> = {
+    'preprocessing': 'bg-remove',
+    'background': 'bg-remove',
+    'copywriting': 'ai-copy',
+    'tts': 'ai-copy',
+    'composing': 'compose',
+    'thumbnail': 'render',
+    'uploading': 'render',
+    'complete': 'render',
+  };
+
   useEffect(() => {
     if (currentStage) {
-      const idx = stages.findIndex((s) => s.key === currentStage);
+      const mapped = stageMap[currentStage] || currentStage;
+      const idx = stages.findIndex((s) => s.key === mapped);
       if (idx >= 0) setStageIndex(idx);
     }
     if (externalProgress !== undefined) {
@@ -28,7 +40,6 @@ export default function ProgressAnimation({ currentStage, progress: externalProg
       return;
     }
 
-    // Auto-advance for demo
     const timer = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) return 100;
@@ -44,22 +55,37 @@ export default function ProgressAnimation({ currentStage, progress: externalProg
   }, [currentStage, externalProgress, stageIndex]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-white">
       {/* Spinner */}
       <div className="relative w-24 h-24 mb-8">
-        <div className="absolute inset-0 rounded-full gradient-bg opacity-20 animate-ping" />
-        <div className="absolute inset-3 rounded-full gradient-bg opacity-30 animate-pulse" />
+        <div className="absolute inset-0 rounded-full gradient-bg opacity-15 animate-ping" />
+        <div className="absolute inset-3 rounded-full gradient-bg opacity-20 animate-pulse" />
         <div className="absolute inset-0 flex items-center justify-center text-4xl">
           {stages[stageIndex].icon}
         </div>
       </div>
 
-      <h2 className="text-xl font-bold mb-2">{stages[stageIndex].label}</h2>
+      <h2 className="text-xl font-bold mb-2 text-foreground">{stages[stageIndex].label}</h2>
       <p className="text-muted text-sm mb-8">{stages[stageIndex].desc}</p>
 
-      {/* Progress bar */}
+      {/* Instagram Stories style progress bar */}
       <div className="w-72 mb-6">
-        <div className="h-2 bg-card-border rounded-full overflow-hidden">
+        <div className="flex gap-1 mb-2">
+          {stages.map((_, i) => (
+            <div key={i} className="flex-1 h-0.5 rounded-full overflow-hidden bg-card-border">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  i < stageIndex ? "w-full gradient-bg" :
+                  i === stageIndex ? "gradient-bg" : "w-0"
+                }`}
+                style={i === stageIndex ? {
+                  width: `${((progress - (i * 25)) / 25) * 100}%`
+                } : undefined}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="h-2 bg-surface rounded-full overflow-hidden">
           <div
             className="h-full gradient-bg rounded-full transition-all duration-300 ease-out"
             style={{ width: `${progress}%` }}
@@ -77,7 +103,7 @@ export default function ProgressAnimation({ currentStage, progress: externalProg
                 i < stageIndex
                   ? "gradient-bg text-white"
                   : i === stageIndex
-                  ? "border-2 border-accent-purple text-accent-purple"
+                  ? "border-2 border-ig-blue text-ig-blue"
                   : "border border-card-border text-muted"
               }`}
             >
@@ -89,7 +115,7 @@ export default function ProgressAnimation({ currentStage, progress: externalProg
                 s.icon
               )}
             </div>
-            <span className={`text-[10px] ${i <= stageIndex ? "text-foreground" : "text-muted"}`}>{s.label.replace(" 중", "")}</span>
+            <span className={`text-[10px] ${i <= stageIndex ? "text-foreground font-medium" : "text-muted"}`}>{s.label.replace(" 중", "")}</span>
           </div>
         ))}
       </div>

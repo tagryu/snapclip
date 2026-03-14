@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-card-border px-4 py-10 mt-20">
+    <footer className="border-t border-card-border px-4 py-10 mt-20 bg-surface">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col items-center md:items-start gap-1">
@@ -21,7 +21,7 @@ export default function Footer() {
             </a>
           </div>
         </div>
-        <div className="mt-6 text-center text-xs text-muted/60">
+        <div className="mt-6 text-center text-xs text-muted">
           © {new Date().getFullYear()} SnapClip. All rights reserved.
         </div>
       </div>

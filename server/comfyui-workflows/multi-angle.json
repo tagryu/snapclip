@@ -1,0 +1,55 @@
+{
+  "_comment": "IP-Adapter + SDXL multi-angle view generation workflow for ComfyUI",
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "INPUT_IMAGE.png" }
+  },
+  "2": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "sd_xl_base_1.0.safetensors" }
+  },
+  "3": {
+    "class_type": "IPAdapterModelLoader",
+    "inputs": { "ipadapter_file": "ip-adapter-plus_sdxl_vit-h.safetensors" }
+  },
+  "4": {
+    "class_type": "CLIPVisionLoader",
+    "inputs": { "clip_name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors" }
+  },
+  "5": {
+    "class_type": "IPAdapterApply",
+    "inputs": {
+      "ipadapter": ["3", 0], "clip_vision": ["4", 0], "image": ["1", 0],
+      "model": ["2", 0], "weight": 0.8, "noise": 0.2,
+      "weight_type": "linear", "start_at": 0.0, "end_at": 1.0
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "same product, 45-degree view, product photography, studio lighting, clean background", "clip": ["2", 1] }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "blurry, distorted, cartoon, watermark, text, different product", "clip": ["2", 1] }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["5", 0], "positive": ["6", 0], "negative": ["7", 0],
+      "latent_image": ["8", 0], "seed": 42, "steps": 25, "cfg": 7.0,
+      "sampler_name": "euler_ancestral", "scheduler": "normal", "denoise": 0.75
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["9", 0], "vae": ["2", 2] }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["10", 0], "filename_prefix": "snapclip_angle" }
+  }
+}

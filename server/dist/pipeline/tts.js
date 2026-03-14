@@ -15,7 +15,6 @@ async function generateTTS(text, outputDir, voice = 'ko-KR-SunHiNeural') {
     logger_1.logger.info(`Generating TTS: "${text.substring(0, 50)}..."`);
     await promises_1.default.mkdir(outputDir, { recursive: true });
     const outputPath = path_1.default.join(outputDir, `tts_${Date.now()}.mp3`);
-    // edge-tts CLI
     const escapedText = text.replace(/"/g, '\\"');
     const cmd = `edge-tts --voice "${voice}" --text "${escapedText}" --write-media "${outputPath}"`;
     try {
@@ -24,9 +23,16 @@ async function generateTTS(text, outputDir, voice = 'ko-KR-SunHiNeural') {
         return outputPath;
     }
     catch (err) {
-        logger_1.logger.error(`TTS failed: ${err.message}`);
-        throw new Error(`TTS generation failed: ${err.message}`);
+        logger_1.logger.warn(`TTS failed, generating silent audio: ${err.message}`);
+        return generateSilentAudio(outputPath);
     }
+}
+async function generateSilentAudio(outputPath) {
+    // Generate 15s silent mp3 with ffmpeg
+    const cmd = `ffmpeg -y -f lavfi -i anullsrc=r=44100:cl=stereo -t 15 -c:a libmp3lame -q:a 9 "${outputPath}"`;
+    await execAsync(cmd, { timeout: 15000 });
+    logger_1.logger.info(`Silent audio generated: ${outputPath}`);
+    return outputPath;
 }
 async function generateNarration(productName, copyLines, outputDir) {
     const script = `${productName}. ${copyLines.join('. ')}`;

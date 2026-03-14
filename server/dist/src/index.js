@@ -6,12 +6,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
+const os_1 = __importDefault(require("os"));
 const uuid_1 = require("uuid");
 const logger_1 = require("./logger");
 const queue_1 = require("./queue");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json({ limit: '50mb' }));
+// Serve generated videos from tmp dir
+app.use('/output', express_1.default.static(path_1.default.join(os_1.default.tmpdir(), 'snapclip'), {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.mp4')) {
+            res.setHeader('Content-Type', 'video/mp4');
+        }
+    }
+}));
 // Health check
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });

@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from './logger';
 import { videoQueue, jobStatus, startWorker } from './queue';
@@ -9,6 +11,15 @@ import type { PipelineInput } from '../pipeline/types';
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+// Serve generated videos from tmp dir
+app.use('/output', express.static(path.join(os.tmpdir(), 'snapclip'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.mp4')) {
+      res.setHeader('Content-Type', 'video/mp4');
+    }
+  }
+}));
 
 // Health check
 app.get('/health', (_req, res) => {

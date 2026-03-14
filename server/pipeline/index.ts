@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../src/logger';
 import { preprocessImages } from './preprocess';
 import { processBackground } from './background';
+import { analyzeProduct } from './gemini-image';
+import { generateImage } from './image-router';
 import { generateCopy } from './copywriter';
 import { generateNarration } from './tts';
 import { composeVideo } from './composer';
@@ -37,22 +39,63 @@ export async function runPipeline(
       composited.push(result);
     }
 
-    // 3. AI Copy generation
-    onProgress(40, 'copywriting');
-    logger.info('Stage 3: AI copy generation');
+    // 3. Gemini product analysis
+    onProgress(30, 'analyzing');
+    logger.info('Stage 3: Gemini product analysis');
+    const productAnalysis = await analyzeProduct(composited[0]);
+    logger.info(`Product analysis: ${JSON.stringify(productAnalysis)}`);
+
+    // 4. Realistic background (hybrid: Gemini → Local → Sharp fallback)
+    onProgress(38, 'realistic-background');
+    logger.info('Stage 4: Realistic background generation');
+    const realisticBgDir = path.join(workDir, 'realistic-bg');
+    const scene = productAnalysis.suggestedScenes[0] || 'clean white surface with soft studio lighting';
+    const realisticBgImage = await generateImage({
+      type: 'background',
+      productImagePath: composited[0],
+      scene,
+      aspectRatio: input.aspectRatio,
+      outputDir: realisticBgDir,
+    }) as string;
+    // If realistic bg was generated (different from original), use it as first image
+    if (realisticBgImage !== composited[0]) {
+      composited[0] = realisticBgImage;
+    }
+
+    // 5. Multi-angle views (hybrid: Gemini → Local → Sharp fallback)
+    onProgress(48, 'multi-angle');
+    logger.info('Stage 5: Multi-angle generation');
+    const multiAngleDir = path.join(workDir, 'multi-angle');
+    const angleImages = await generateImage({
+      type: 'multiAngle',
+      productImagePath: composited[0],
+      angles: ['front', '45-degree', 'side'],
+      outputDir: multiAngleDir,
+    }) as string[];
+    // Add angle images to composited array for video segments
+    for (const angleImg of angleImages) {
+      composited.push(angleImg);
+    }
+
+    // 6. AI Copy generation (uses product analysis for better copy)
+    onProgress(55, 'copywriting');
+    logger.info('Stage 6: AI copy generation');
+    const enrichedFeatures = input.productFeatures.length > 0
+      ? input.productFeatures
+      : [productAnalysis.material, productAnalysis.color].filter(f => f && f !== 'unknown');
     const aiCopy = await generateCopy(
       composited[0],
       input.productName,
       input.productPrice,
-      input.productFeatures
+      enrichedFeatures.length > 0 ? enrichedFeatures : input.productFeatures
     );
     logger.info(`AI Copy: ${JSON.stringify(aiCopy)}`);
 
-    // 4. TTS narration (optional)
+    // 7. TTS narration (optional)
     let narrationPath: string | undefined;
     if (input.voiceEnabled) {
-      onProgress(55, 'tts');
-      logger.info('Stage 4: TTS narration');
+      onProgress(60, 'tts');
+      logger.info('Stage 7: TTS narration');
       narrationPath = await generateNarration(
         input.productName,
         aiCopy.lines,
@@ -60,9 +103,9 @@ export async function runPipeline(
       );
     }
 
-    // 5. Video composition
-    onProgress(65, 'composing');
-    logger.info('Stage 5: Video composition');
+    // 8. Video composition
+    onProgress(68, 'composing');
+    logger.info('Stage 8: Video composition');
     const aspect = ASPECT_CONFIGS[input.aspectRatio];
     const bgmDir = path.join(__dirname, '..', 'assets', 'bgm');
     const bgmPath = input.bgmPath || path.join(bgmDir, 'default.mp3');
@@ -74,12 +117,13 @@ export async function runPipeline(
       productName: input.productName,
       productPrice: input.productPrice,
       aiCopy,
+      productFeatures: input.productFeatures,
       bgmPath: await fileExists(bgmPath) ? bgmPath : undefined,
       narrationPath,
       outputDir: path.join(workDir, 'output'),
     });
 
-    // 6. Generate thumbnail from first frame
+    // 9. Generate thumbnail from first frame
     onProgress(85, 'thumbnail');
     const sharp = (await import('sharp')).default;
     const thumbnailPath = path.join(workDir, 'thumbnail.jpg');
@@ -88,18 +132,23 @@ export async function runPipeline(
       .jpeg({ quality: 85 })
       .toFile(thumbnailPath);
 
-    // 7. Upload to R2
+    // 10. Upload to R2
     onProgress(90, 'uploading');
-    logger.info('Stage 6: Uploading');
+    logger.info('Stage 10: Uploading');
     let videoUrl: string;
     let thumbnailUrl: string;
     try {
       videoUrl = await uploadVideo(videoPath, input.projectId);
       thumbnailUrl = await uploadThumbnail(thumbnailPath, input.projectId);
     } catch (err: any) {
-      logger.warn(`Upload failed (using local paths): ${err.message}`);
-      videoUrl = videoPath;
-      thumbnailUrl = thumbnailPath;
+      logger.warn(`Upload failed (using local server URLs): ${err.message}`);
+      // Convert local paths to server-accessible URLs
+      const tmpBase = path.join(os.tmpdir(), 'snapclip');
+      const relVideo = path.relative(tmpBase, videoPath);
+      const relThumb = path.relative(tmpBase, thumbnailPath);
+      const serverUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 4000}`;
+      videoUrl = `${serverUrl}/output/${relVideo}`;
+      thumbnailUrl = `${serverUrl}/output/${relThumb}`;
     }
 
     onProgress(100, 'complete');
@@ -108,8 +157,9 @@ export async function runPipeline(
     return {
       videoUrl,
       thumbnailUrl,
-      durationSec: 9, // approximate
+      durationSec: 15,
       aiCopy,
+      productAnalysis,
     };
   } catch (err) {
     logger.error('Pipeline failed:', err);

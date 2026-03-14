@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ToastProvider from "@/components/Toast";
 import Footer from "@/components/Footer";
+import NavBar from "@/components/NavBar";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: {
@@ -35,27 +37,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="dark">
+    <html lang="ko">
       <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
       </head>
       <body className="antialiased bg-background text-foreground min-h-screen">
-        <nav className="fixed top-0 w-full z-50 border-b border-card-border bg-background/80 backdrop-blur-xl">
-          <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="/" className="text-lg font-bold gradient-text">SnapClip</a>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <a href="/create" className="text-sm text-muted hover:text-foreground transition-colors">만들기</a>
-              <a href="/my" className="text-sm text-muted hover:text-foreground transition-colors hidden sm:block">내 영상</a>
-              <a href="/pricing" className="text-sm text-muted hover:text-foreground transition-colors">요금제</a>
-              <a href="/login" className="text-sm px-4 py-1.5 rounded-full gradient-bg text-white font-medium hover:opacity-90 transition-opacity">로그인</a>
-            </div>
-          </div>
-        </nav>
-        <main className="pt-14">
-          {children}
-        </main>
-        <Footer />
-        <ToastProvider />
+        <AuthProvider>
+          <NavBar />
+          <main className="pt-14">
+            {children}
+          </main>
+          <Footer />
+          <ToastProvider />
+        </AuthProvider>
       </body>
     </html>
   );

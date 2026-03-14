@@ -6,9 +6,12 @@ interface ComposerOptions {
     productName: string;
     productPrice: string;
     aiCopy: AICopy;
+    productFeatures?: string[];
     bgmPath?: string;
     narrationPath?: string;
     outputDir: string;
+    /** BPM for beat-sync cut timing (optional). Overrides segment durations. */
+    bpm?: number;
 }
 export declare function composeVideo(opts: ComposerOptions): Promise<string>;
 export {};

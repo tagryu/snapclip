@@ -2,21 +2,42 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dynamicTemplate = void 0;
 const base_1 = require("./base");
+/**
+ * Dynamic template — 15s, 7 segments with very fast 1.5-2.5s cuts.
+ * High energy, alternating zoom effects for maximum impact.
+ *
+ * Timeline (~15s):
+ *  0-2s:    Fast zoom — impact opener
+ *  2-3.5s:  Shake zoom in — product name
+ *  3.5-6s:  Snap zoom punch — feature highlight
+ *  6-8s:    Fast zoom alternating — feature 2
+ *  8-10s:   Shake zoom in — feature 3
+ *  10-12s:  Snap zoom punch — price + benefit
+ *  12-15s:  Fast zoom — CTA
+ */
 exports.dynamicTemplate = {
     name: 'dynamic',
+    colorGrade: 'eq=contrast=1.3:brightness=0.02:saturation=0.9',
     segments: (imageCount) => {
-        const segs = [];
-        for (let i = 0; i < Math.min(imageCount, 3); i++) {
-            segs.push({
-                duration: 1.5,
-                effect: i % 2 === 0 ? base_1.ZP.rotate(1.5) : base_1.ZP.fastZoom(1.5),
-                transition: i === 0 ? 'fadewhite' : 'zoomin',
-                transitionDuration: 0.2,
-            });
-        }
-        return segs;
+        const img = (i) => Math.min(i, imageCount - 1);
+        return [
+            // 0: Impact opener — fast zoom
+            { duration: 2.0, effect: base_1.ZP.fastZoom(2.0), transition: 'slidedown', transitionDuration: 0.15, imageIndex: img(0) },
+            // 1: Product name — shake zoom
+            { duration: 1.5, effect: base_1.ZP.shakeZoomIn(1.5), transition: 'slideup', transitionDuration: 0.15, imageIndex: img(0) },
+            // 2: Feature highlight — snap zoom punch
+            { duration: 2.5, effect: base_1.ZP.snapZoomPunch(2.5), transition: 'wiperight', transitionDuration: 0.15, imageIndex: img(1) },
+            // 3: Feature 2 — fast zoom
+            { duration: 2.0, effect: base_1.ZP.fastZoom(2.0), transition: 'slidedown', transitionDuration: 0.15, imageIndex: img(1) },
+            // 4: Feature 3 — shake zoom
+            { duration: 2.0, effect: base_1.ZP.shakeZoomIn(2.0), transition: 'slideup', transitionDuration: 0.15, imageIndex: img(Math.min(2, imageCount - 1)) },
+            // 5: Price + benefit — snap zoom punch
+            { duration: 2.0, effect: base_1.ZP.snapZoomPunch(2.0), transition: 'wiperight', transitionDuration: 0.15, imageIndex: img(0) },
+            // 6: CTA — fast zoom
+            { duration: 3.0, effect: base_1.ZP.fastZoom(3.0), transition: 'slidedown', transitionDuration: 0.2, imageIndex: img(0) },
+        ];
     },
-    ctaDuration: 1,
+    ctaDuration: 0,
     subtitleStyle: {
         fontsize: 56,
         fontcolor: 'yellow',

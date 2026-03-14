@@ -52,8 +52,8 @@ export default function UpgradeModal({ isOpen, onClose, creditsUsed = 3, credits
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-card border border-card-border rounded-2xl p-6 animate-in fade-in zoom-in-95">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-lg bg-white border border-card-border rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95">
         {/* Close */}
         <button onClick={onClose} className="absolute top-4 right-4 text-muted hover:text-foreground transition-colors">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,10 +63,10 @@ export default function UpgradeModal({ isOpen, onClose, creditsUsed = 3, credits
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full gradient-bg mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full gradient-bg mb-4 shadow-lg">
             <span className="text-2xl">🚀</span>
           </div>
-          <h2 className="text-xl font-bold mb-2">크레딧을 모두 사용했어요</h2>
+          <h2 className="text-xl font-bold mb-2 text-foreground">크레딧을 모두 사용했어요</h2>
           <p className="text-sm text-muted">
             이번 달 {creditsUsed}/{creditsLimit}개를 사용했습니다. 업그레이드하고 더 많은 영상을 만들어보세요!
           </p>
@@ -75,17 +75,17 @@ export default function UpgradeModal({ isOpen, onClose, creditsUsed = 3, credits
         {/* Plans */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           {plans.map((plan) => (
-            <div key={plan.planId} className="p-4 rounded-xl border border-card-border bg-background">
-              <h3 className="font-bold mb-1">{plan.name}</h3>
+            <div key={plan.planId} className="p-4 rounded-xl border border-card-border bg-surface">
+              <h3 className="font-bold mb-1 text-foreground">{plan.name}</h3>
               <div className="flex items-baseline gap-1 mb-1">
                 <span className="text-2xl font-bold gradient-text">{plan.price}</span>
                 <span className="text-xs text-muted">/월</span>
               </div>
-              <p className="text-xs text-accent-purple font-medium mb-3">영상 {plan.videos}</p>
+              <p className="text-xs text-ig-blue font-semibold mb-3">영상 {plan.videos}</p>
               <ul className="space-y-1.5 mb-4">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-center gap-1.5 text-xs text-muted">
-                    <svg className="w-3 h-3 text-accent-purple shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-3 h-3 text-ig-blue shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     {f}
@@ -95,7 +95,7 @@ export default function UpgradeModal({ isOpen, onClose, creditsUsed = 3, credits
               <button
                 onClick={() => handleUpgrade(plan.planId)}
                 disabled={loading !== null}
-                className="w-full py-2 rounded-lg gradient-bg text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="w-full py-2 rounded-lg bg-ig-blue text-white text-sm font-semibold hover:bg-ig-blue/90 transition-colors disabled:opacity-50"
               >
                 {loading === plan.planId ? "처리 중..." : `${plan.name} 시작하기`}
               </button>

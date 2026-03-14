@@ -1,43 +1,56 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import fs from 'fs/promises';
 import { logger } from '../src/logger';
 import type { AICopy } from './types';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-
 export async function generateCopy(
-  imagePath: string,
+  _imagePath: string,
   productName: string,
   productPrice: string,
   productFeatures: string[]
 ): Promise<AICopy> {
   logger.info(`Generating AI copy for: ${productName}`);
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (apiKey) {
+    try {
+      return await generateWithGemini(_imagePath, productName, productPrice, productFeatures);
+    } catch (err: any) {
+      logger.warn(`Gemini failed, using fallback: ${err.message}`);
+    }
+  } else {
+    logger.info('No GEMINI_API_KEY, using dummy copy');
+  }
+
+  // Fallback dummy copy
+  const featureText = productFeatures.length > 0 ? productFeatures[0] : '프리미엄 퀄리티';
+  return {
+    lines: [
+      `✨ ${productName}, 감각적인 선택`,
+      `💎 ${featureText}`,
+      `🔥 지금 바로 만나보세요`,
+    ],
+    hashtags: ['#추천', '#인기', '#트렌드', '#필수템', '#신상'],
+  };
+}
+
+async function generateWithGemini(
+  imagePath: string,
+  productName: string,
+  productPrice: string,
+  productFeatures: string[]
+): Promise<AICopy> {
+  const { GoogleGenerativeAI } = await import('@google/generative-ai');
+  const fs = await import('fs/promises');
+
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   const imageData = await fs.readFile(imagePath);
   const base64Image = imageData.toString('base64');
   const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
 
   const prompt = `당신은 한국의 프로 광고 카피라이터입니다.
-
-상품 정보:
-- 상품명: ${productName}
-- 가격: ${productPrice}
-- 특징: ${productFeatures.join(', ')}
-
-첨부된 상품 사진을 분석하고, 아래 형식으로 정확히 응답하세요:
-
-COPY1: (첫 번째 광고 카피 - 감성적, 20자 이내)
-COPY2: (두 번째 광고 카피 - 기능 강조, 20자 이내)  
-COPY3: (세 번째 광고 카피 - 구매 유도, 20자 이내)
-HASHTAGS: #태그1 #태그2 #태그3 #태그4 #태그5
-
-규칙:
-- 한국어로 작성
-- 짧고 임팩트 있게
-- 이모지 적절히 사용
-- 해시태그는 반드시 5개`;
+상품명: ${productName}, 가격: ${productPrice}, 특징: ${productFeatures.join(', ')}
+COPY1~3 각 20자 이내 한국어, HASHTAGS 5개를 작성하세요.`;
 
   const result = await model.generateContent([
     prompt,
@@ -45,12 +58,6 @@ HASHTAGS: #태그1 #태그2 #태그3 #태그4 #태그5
   ]);
 
   const text = result.response.text();
-  logger.info(`AI response: ${text}`);
-
-  return parseCopyResponse(text);
-}
-
-function parseCopyResponse(text: string): AICopy {
   const lines: string[] = [];
   const copyMatches = text.match(/COPY\d:\s*(.+)/g);
   if (copyMatches) {
@@ -59,20 +66,12 @@ function parseCopyResponse(text: string): AICopy {
       if (val) lines.push(val);
     }
   }
-
   let hashtags: string[] = [];
   const hashMatch = text.match(/HASHTAGS?:\s*(.+)/i);
-  if (hashMatch) {
-    hashtags = hashMatch[1].match(/#[^\s#]+/g) || [];
-  }
+  if (hashMatch) hashtags = hashMatch[1].match(/#[^\s#]+/g) || [];
 
-  // Fallback
-  if (lines.length === 0) {
-    lines.push('감각적인 디자인', '프리미엄 퀄리티', '지금 바로 만나보세요');
-  }
-  if (hashtags.length === 0) {
-    hashtags = ['#추천', '#인기', '#트렌드', '#필수템', '#신상'];
-  }
+  if (lines.length === 0) lines.push('감각적인 디자인', '프리미엄 퀄리티', '지금 바로 만나보세요');
+  if (hashtags.length === 0) hashtags = ['#추천', '#인기', '#트렌드', '#필수템', '#신상'];
 
   return { lines: lines.slice(0, 3), hashtags: hashtags.slice(0, 5) };
 }

@@ -6,9 +6,9 @@ export default function Home() {
   ];
 
   const demos = [
-    { category: "패션", product: "오버사이즈 니트", color: "from-rose-500/20 to-orange-500/20" },
-    { category: "뷰티", product: "수분 크림", color: "from-sky-500/20 to-violet-500/20" },
-    { category: "리빙", product: "캔들 세트", color: "from-amber-500/20 to-emerald-500/20" },
+    { category: "패션", product: "오버사이즈 니트", color: "from-pink-100 to-orange-100" },
+    { category: "뷰티", product: "수분 크림", color: "from-blue-100 to-violet-100" },
+    { category: "리빙", product: "캔들 세트", color: "from-amber-100 to-emerald-100" },
   ];
 
   const plans = [
@@ -41,15 +41,15 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Hero */}
       <section className="relative px-4 pt-24 pb-20 md:pt-36 md:pb-32 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(124,58,237,0.15)_0%,_transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-surface to-white" />
         <div className="relative max-w-3xl mx-auto">
-          <div className="inline-block px-3 py-1 mb-6 text-xs font-medium rounded-full border border-card-border text-muted">
+          <div className="inline-block px-4 py-1.5 mb-6 text-xs font-semibold rounded-full bg-ig-blue/10 text-ig-blue">
             🚀 AI 숏폼 영상 생성 서비스
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight mb-6 text-foreground">
             상품 사진 한 장이면,
             <br />
             <span className="gradient-text">15초 숏폼 광고</span>가 나온다
@@ -61,39 +61,53 @@ export default function Home() {
           </p>
           <a
             href="/create"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full gradient-bg text-white font-semibold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-ig-blue text-white font-semibold text-lg hover:bg-ig-blue/90 transition-colors shadow-lg shadow-ig-blue/25"
           >
             무료로 시작하기
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
           </a>
-          {/* Trust indicator */}
-          <p className="mt-6 text-sm text-muted">
-            ⭐ <strong className="text-foreground">1,000+</strong> 셀러가 사용 중
-          </p>
+        </div>
+      </section>
+
+      {/* Social Proof */}
+      <section className="px-4 py-10 border-y border-card-border bg-surface">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-8 text-center">
+          <div>
+            <p className="text-2xl font-bold text-foreground">1,000+</p>
+            <p className="text-sm text-muted">셀러가 사용 중</p>
+          </div>
+          <div className="hidden sm:block w-px h-10 bg-card-border" />
+          <div>
+            <p className="text-2xl font-bold text-foreground">50,000+</p>
+            <p className="text-sm text-muted">생성된 영상</p>
+          </div>
+          <div className="hidden sm:block w-px h-10 bg-card-border" />
+          <div>
+            <p className="text-2xl font-bold text-foreground">4.9 ⭐</p>
+            <p className="text-sm text-muted">평균 만족도</p>
+          </div>
         </div>
       </section>
 
       {/* Demo: Before → After */}
       <section className="px-4 py-20 md:py-28">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">이렇게 변합니다</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3 text-foreground">이렇게 변합니다</h2>
           <p className="text-muted text-center mb-14">상품 사진 한 장 → AI 숏폼 영상</p>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {demos.map((demo) => (
-              <div key={demo.product} className="rounded-2xl bg-card border border-card-border p-5 card-glow">
-                <p className="text-xs text-accent-purple font-medium mb-3">{demo.category}</p>
+              <div key={demo.product} className="rounded-2xl bg-white border border-card-border p-5 card-hover transition-all duration-300">
+                <p className="text-xs text-ig-pink font-semibold mb-3">{demo.category}</p>
                 <div className="flex items-center gap-3 mb-4">
-                  {/* Before */}
                   <div className={`flex-1 aspect-square rounded-xl bg-gradient-to-br ${demo.color} flex items-center justify-center`}>
                     <span className="text-3xl">📷</span>
                   </div>
-                  <div className="text-muted text-xl">→</div>
-                  {/* After */}
-                  <div className={`flex-1 aspect-[9/16] rounded-xl bg-gradient-to-br ${demo.color} flex items-center justify-center border border-accent-purple/30`}>
+                  <div className="text-card-border text-xl font-bold">→</div>
+                  <div className={`flex-1 aspect-[9/16] rounded-xl bg-gradient-to-br ${demo.color} flex items-center justify-center border border-ig-pink/20`}>
                     <span className="text-2xl">🎬</span>
                   </div>
                 </div>
-                <p className="text-sm font-medium text-center">{demo.product}</p>
+                <p className="text-sm font-semibold text-center text-foreground">{demo.product}</p>
               </div>
             ))}
           </div>
@@ -101,16 +115,16 @@ export default function Home() {
       </section>
 
       {/* Process */}
-      <section className="px-4 py-20 md:py-28">
+      <section className="px-4 py-20 md:py-28 bg-surface">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">어떻게 만들어지나요?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3 text-foreground">어떻게 만들어지나요?</h2>
           <p className="text-muted text-center mb-14">세 단계면 충분합니다</p>
           <div className="grid md:grid-cols-3 gap-6">
             {steps.map((step) => (
-              <div key={step.num} className="relative p-6 rounded-2xl bg-card border border-card-border card-glow transition-all duration-300">
+              <div key={step.num} className="relative p-6 rounded-2xl bg-white border border-card-border card-hover transition-all duration-300">
                 <div className="text-4xl mb-4">{step.icon}</div>
-                <div className="text-xs font-mono text-accent-purple mb-2">{step.num}</div>
-                <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                <div className="text-xs font-mono text-ig-blue font-bold mb-2">{step.num}</div>
+                <h3 className="text-xl font-bold mb-2 text-foreground">{step.title}</h3>
                 <p className="text-muted text-sm">{step.desc}</p>
               </div>
             ))}
@@ -121,44 +135,44 @@ export default function Home() {
       {/* Pricing */}
       <section className="px-4 py-20 md:py-28">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">요금제</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3 text-foreground">요금제</h2>
           <p className="text-muted text-center mb-14">무료로 시작하고, 필요할 때 업그레이드하세요</p>
           <div className="grid md:grid-cols-3 gap-6">
             {plans.map((plan) => (
               <div
                 key={plan.name}
-                className={`relative p-6 rounded-2xl border transition-all duration-300 card-glow ${
+                className={`relative p-6 rounded-2xl border transition-all duration-300 card-hover ${
                   plan.highlight
-                    ? "bg-card border-accent-purple/50 shadow-lg shadow-purple-500/10"
-                    : "bg-card border-card-border"
+                    ? "bg-white border-ig-blue shadow-lg shadow-ig-blue/10"
+                    : "bg-white border-card-border"
                 }`}
               >
                 {plan.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 text-xs font-medium rounded-full gradient-bg text-white">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-0.5 text-xs font-bold rounded-full gradient-bg text-white">
                     인기
                   </div>
                 )}
-                <h3 className="text-lg font-bold mb-1">{plan.name}</h3>
+                <h3 className="text-lg font-bold mb-1 text-foreground">{plan.name}</h3>
                 <p className="text-xs text-muted mb-4">{plan.desc}</p>
                 <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-3xl font-bold">{plan.price}</span>
+                  <span className="text-3xl font-bold text-foreground">{plan.price}</span>
                   <span className="text-sm text-muted">/월</span>
                 </div>
-                <p className="text-sm text-accent-purple font-medium mb-6">영상 {plan.videos}</p>
+                <p className="text-sm text-ig-blue font-semibold mb-6">영상 {plan.videos}</p>
                 <ul className="space-y-2.5 mb-8">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-muted">
-                      <svg className="w-4 h-4 text-accent-purple shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      <svg className="w-4 h-4 text-ig-blue shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                       {f}
                     </li>
                   ))}
                 </ul>
                 <a
                   href="/create"
-                  className={`block text-center py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  className={`block text-center py-2.5 rounded-xl text-sm font-semibold transition-all ${
                     plan.highlight
-                      ? "gradient-bg text-white hover:opacity-90"
-                      : "bg-card-border text-foreground hover:bg-card-border/80"
+                      ? "bg-ig-blue text-white hover:bg-ig-blue/90"
+                      : "bg-surface text-foreground hover:bg-card-border/50"
                   }`}
                 >
                   {plan.cta}
@@ -170,14 +184,14 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="px-4 py-20 md:py-28">
+      <section className="px-4 py-20 md:py-28 bg-surface">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">자주 묻는 질문</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3 text-foreground">자주 묻는 질문</h2>
           <p className="text-muted text-center mb-14">궁금한 점이 있으신가요?</p>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faqs.map((faq) => (
-              <details key={faq.q} className="group rounded-2xl bg-card border border-card-border p-5">
-                <summary className="flex items-center justify-between cursor-pointer list-none font-medium">
+              <details key={faq.q} className="group rounded-2xl bg-white border border-card-border p-5">
+                <summary className="flex items-center justify-between cursor-pointer list-none font-semibold text-foreground">
                   {faq.q}
                   <span className="ml-4 text-muted group-open:rotate-45 transition-transform text-xl leading-none">+</span>
                 </summary>
@@ -191,11 +205,11 @@ export default function Home() {
       {/* CTA */}
       <section className="px-4 py-20 md:py-28 text-center">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">지금 바로 시작하세요</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">지금 바로 시작하세요</h2>
           <p className="text-muted mb-8">무료로 3개의 영상을 만들어보세요. 카드 등록 없이 시작할 수 있습니다.</p>
           <a
             href="/create"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full gradient-bg text-white font-semibold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-ig-blue text-white font-semibold text-lg hover:bg-ig-blue/90 transition-colors shadow-lg shadow-ig-blue/25"
           >
             무료로 시작하기
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
