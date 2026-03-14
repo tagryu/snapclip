@@ -6,9 +6,9 @@ export default function Home() {
   ];
 
   const demos = [
-    { category: "패션", product: "오버사이즈 니트", icon: "👕" },
-    { category: "뷰티", product: "수분 크림", icon: "💄" },
-    { category: "리빙", product: "캔들 세트", icon: "🕯️" },
+    { category: "패션", product: "올리브 니트 스웨터", beforeImg: "/demos/sweater-original.png", video: "/demos/sweater-shorts.mp4" },
+    { category: "패션", product: "라이트워시 데님", beforeImg: "/demos/jeans-original.png", video: "/demos/jeans-shorts.mp4" },
+    { category: "패션", product: "AI 영상 클립", beforeImg: "/demos/sweater-original.png", video: "/demos/sweater-veo.mp4" },
   ];
 
   const plans = [
@@ -113,21 +113,64 @@ export default function Home() {
             </a>
           </div>
 
-          {/* Preview Mockup */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="aspect-[9/16] rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center">
-                  <span className="text-4xl">📸</span>
+          {/* Preview - Real Video Demos */}
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Sweater Demo */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
+                <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-gray-100">
+                  <video
+                    src="/demos/sweater-shorts.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">니트 스웨터</span>
+                  </div>
                 </div>
-                <div className="aspect-[9/16] rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center">
-                  <span className="text-4xl">✨</span>
+              </div>
+
+              {/* Jeans Demo */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200 md:scale-105">
+                <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-gray-100">
+                  <video
+                    src="/demos/jeans-shorts.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">데님 진</span>
+                  </div>
+                  <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white text-[10px] font-bold">
+                    AI 생성
+                  </div>
                 </div>
-                <div className="aspect-[9/16] rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center">
-                  <span className="text-4xl">🎬</span>
+              </div>
+
+              {/* Sweater Veo Single Clip */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
+                <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-gray-100">
+                  <video
+                    src="/demos/sweater-veo.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">AI 영상 클립</span>
+                  </div>
                 </div>
               </div>
             </div>
+            <p className="text-center text-sm text-gray-500 mt-6">↑ 실제 SnapClip으로 생성된 영상입니다</p>
           </div>
         </div>
       </section>
@@ -162,26 +205,32 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-6">
             {demos.map((demo) => (
-              <div key={demo.product} className="bg-white rounded-2xl p-6 border border-gray-200 card-hover">
+              <div key={demo.product} className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-pink-200 hover:shadow-md transition-all">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 text-pink-700 border border-pink-200">
                     {demo.category}
                   </span>
                 </div>
                 
-                <div className="flex items-center gap-4 mb-5">
-                  {/* Before */}
-                  <div className="flex-1 aspect-square rounded-xl bg-gray-100 flex items-center justify-center border border-gray-200">
-                    <span className="text-3xl">{demo.icon}</span>
+                <div className="flex items-center gap-3 mb-5">
+                  {/* Before - Product Photo */}
+                  <div className="w-20 h-20 shrink-0 rounded-xl bg-gray-50 border border-gray-200 overflow-hidden flex items-center justify-center">
+                    <img src={demo.beforeImg} alt={demo.product} className="w-full h-full object-contain p-1" />
                   </div>
                   
                   {/* Arrow */}
-                  <div className="text-gray-400 text-2xl font-bold">→</div>
+                  <div className="text-gray-300 text-xl font-bold shrink-0">→</div>
                   
-                  {/* After */}
-                  <div className="flex-1 aspect-[9/16] rounded-xl bg-gray-100 flex items-center justify-center border border-gray-200 relative overflow-hidden">
-                    <span className="text-2xl">▶️</span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  {/* After - Video */}
+                  <div className="flex-1 aspect-[9/16] rounded-xl overflow-hidden bg-gray-100 border border-gray-200 relative">
+                    <video
+                      src={demo.video}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
                 
