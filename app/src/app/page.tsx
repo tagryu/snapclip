@@ -13,30 +13,30 @@ export default function Home() {
 
   const plans = [
     { 
-      name: "Free", 
-      price: "₩0", 
-      videos: "3개/월", 
-      desc: "가볍게 시작하기", 
-      features: ["워터마크 포함", "720p 해상도", "기본 템플릿 3종"], 
-      cta: "무료로 시작하기", 
+      name: "5 크레딧", 
+      price: "₩15,000", 
+      videos: "5개 영상", 
+      desc: "개당 ₩3,000", 
+      features: ["워터마크 제거", "1080p 고화질", "모든 템플릿 사용", "상업적 이용 가능"], 
+      cta: "크레딧 충전하기", 
       highlight: false 
     },
     { 
-      name: "Basic", 
-      price: "₩9,900", 
-      videos: "30개/월", 
-      desc: "성장하는 셀러를 위해", 
-      features: ["워터마크 제거", "1080p 해상도", "전체 템플릿", "AI 카피라이팅"], 
-      cta: "Basic 시작하기", 
+      name: "20 크레딧", 
+      price: "₩50,000", 
+      videos: "20개 영상", 
+      desc: "개당 ₩2,500 (17% 할인)", 
+      features: ["워터마크 제거", "1080p 고화질", "모든 템플릿 사용", "상업적 이용 가능"], 
+      cta: "크레딧 충전하기", 
       highlight: true 
     },
     { 
-      name: "Pro", 
-      price: "₩29,900", 
-      videos: "무제한", 
-      desc: "프로 셀러 & 마케터", 
-      features: ["모든 Basic 기능", "4K 해상도", "커스텀 브랜딩", "우선 렌더링", "API 액세스"], 
-      cta: "Pro 시작하기", 
+      name: "50 크레딧", 
+      price: "₩100,000", 
+      videos: "50개 영상", 
+      desc: "개당 ₩2,000 (33% 할인)", 
+      features: ["워터마크 제거", "1080p 고화질", "모든 템플릿 사용", "상업적 이용 가능"], 
+      cta: "크레딧 충전하기", 
       highlight: false 
     },
   ];
@@ -96,7 +96,7 @@ export default function Home() {
               href="/create"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold text-lg hover:opacity-90 transition-all shadow-sm hover:shadow-md"
             >
-              <span>무료로 시작하기</span>
+              <span>영상 만들기</span>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -279,8 +279,8 @@ export default function Home() {
       <section className="px-4 py-24 md:py-32 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">요금제</h2>
-            <p className="text-gray-600 text-lg">무료로 시작하고, 필요할 때 업그레이드하세요</p>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">크레딧 충전</h2>
+            <p className="text-gray-600 text-lg">필요한 만큼만 충전하세요 • 1크레딧 = 1영상</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
@@ -328,7 +328,7 @@ export default function Home() {
                 </ul>
                 
                 <a
-                  href="/create"
+                  href="/pricing"
                   className={`block text-center py-3 rounded-xl text-sm font-semibold transition-all ${
                     plan.highlight
                       ? "bg-white text-pink-600 hover:bg-pink-50"
@@ -372,16 +372,16 @@ export default function Home() {
             지금 바로 <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">시작</span>하세요
           </h2>
           <p className="text-gray-600 text-lg mb-10 text-balance">
-            무료로 3개의 영상을 만들어보세요.
+            첫 가입 시 1크레딧 무료 제공
             <br />
-            카드 등록 없이 바로 시작할 수 있습니다.
+            바로 첫 영상을 만들어보세요
           </p>
           
           <a
             href="/create"
             className="inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold text-xl hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
           >
-            <span>무료로 시작하기</span>
+            <span>영상 만들기</span>
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>

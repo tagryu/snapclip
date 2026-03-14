@@ -1,269 +1,322 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 
-const plans = [
+const TOSS_CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
+
+interface CreditPackage {
+  credits: number;
+  price: number;
+  pricePerCredit: number;
+  discount: number;
+  popular?: boolean;
+}
+
+const packages: CreditPackage[] = [
   {
-    name: "Free",
-    price: "₩0",
-    priceNum: 0,
-    videos: "3개/월",
-    desc: "가볍게 시작하기",
-    features: ["워터마크 포함", "720p 해상도", "기본 템플릿 3종"],
-    cta: "무료로 시작하기",
-    highlight: false,
-    planId: "free",
+    credits: 5,
+    price: 15000,
+    pricePerCredit: 3000,
+    discount: 0,
   },
   {
-    name: "Basic",
-    price: "₩9,900",
-    priceNum: 9900,
-    videos: "30개/월",
-    desc: "성장하는 셀러를 위해",
-    features: ["워터마크 제거", "1080p 해상도", "전체 템플릿", "AI 카피라이팅"],
-    cta: "Basic 시작하기",
-    highlight: true,
-    planId: "basic",
+    credits: 20,
+    price: 50000,
+    pricePerCredit: 2500,
+    discount: 17,
+    popular: true,
   },
   {
-    name: "Pro",
-    price: "₩29,900",
-    priceNum: 29900,
-    videos: "무제한",
-    desc: "프로 셀러 & 마케터",
-    features: ["모든 Basic 기능", "4K 해상도", "커스텀 브랜딩", "우선 렌더링", "API 액세스"],
-    cta: "Pro 시작하기",
-    highlight: false,
-    planId: "pro",
+    credits: 50,
+    price: 100000,
+    pricePerCredit: 2000,
+    discount: 33,
   },
 ];
 
 export default function PricingPage() {
-  const [loading, setLoading] = useState<string | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<CreditPackage | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSelect = async (planId: string) => {
-    if (planId === "free") {
-      window.location.href = "/create";
-      return;
-    }
+  const handlePurchase = async (pkg: CreditPackage) => {
+    setIsLoading(true);
+    setSelectedPackage(pkg);
 
-    setLoading(planId);
     try {
-      const res = await fetch("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
+      const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
+      
+      const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      const orderName = `${pkg.credits}크레딧 충전`;
+
+      // Get payment widget and request payment
+      const payment = tossPayments.payment({
+        customerKey: `customer_${Date.now()}`,
       });
-      const data = await res.json();
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      }
-    } catch {
-      // error handled
+      
+      await payment.requestPayment({
+        method: "CARD",
+        amount: {
+          currency: "KRW",
+          value: pkg.price,
+        },
+        orderId,
+        orderName,
+        successUrl: `${window.location.origin}/payments/success`,
+        failUrl: `${window.location.origin}/payments/fail`,
+        customerName: "SnapClip 사용자",
+      });
+    } catch (error) {
+      console.error("결제 오류:", error);
+      alert("결제 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
-      setLoading(null);
+      setIsLoading(false);
+      setSelectedPackage(null);
     }
   };
 
   return (
-    <div className="min-h-screen px-4 py-16 md:py-24 bg-white">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-gray-100 border border-gray-200 text-sm font-medium text-gray-600">
-            💳 간편한 결제, 언제든 해지
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <section className="px-4 pt-20 pb-16 md:pt-32 md:pb-24 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
+        <div className="max-w-5xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-600 shadow-sm">
+            <span className="w-2 h-2 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-full" />
+            크레딧 충전제
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-            딱 맞는 <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">요금제</span>를 선택하세요
+          
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight mb-6 text-balance text-gray-900">
+            필요한 만큼만,
+            <br />
+            <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+              크레딧 충전
+            </span>
           </h1>
-          <p className="text-gray-600 text-xl max-w-2xl mx-auto text-balance">
-            무료로 시작하고, 필요할 때 업그레이드하세요
+          
+          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto text-balance leading-relaxed">
+            1크레딧 = 1영상
+            <br />
+            월정액 부담 없이, 필요할 때 충전해서 사용하세요
           </p>
         </div>
+      </section>
 
-        {/* Plans Grid */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-20">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`rounded-2xl p-8 transition-all border ${
-                plan.highlight
-                  ? "bg-blue-600 text-white border-blue-600 shadow-xl md:scale-105"
-                  : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-lg"
-              }`}
-            >
-              {/* Highlight Badge */}
-              {plan.highlight && (
-                <div className="inline-flex items-center gap-1 px-3 py-1 mb-4 text-xs font-bold rounded-full bg-white/20 text-white">
-                  🔥 가장 인기
-                </div>
-              )}
-              
-              <div>
-                {/* Plan Name */}
-                <h3 className={`text-2xl font-bold mb-2 ${plan.highlight ? "text-white" : "text-gray-900"}`}>
-                  {plan.name}
-                </h3>
-                <p className={`text-sm mb-6 ${plan.highlight ? "text-white/90" : "text-gray-600"}`}>
-                  {plan.desc}
-                </p>
-                
-                {/* Price */}
-                <div className="mb-2">
-                  <div className="flex items-baseline gap-2">
-                    <span className={`text-5xl font-bold ${plan.highlight ? "text-white" : "text-gray-900"}`}>
-                      {plan.price}
-                    </span>
-                    <span className={`text-lg ${plan.highlight ? "text-white/90" : "text-gray-600"}`}>/월</span>
+      {/* Pricing Cards */}
+      <section className="px-4 py-16 md:py-24 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8">
+            {packages.map((pkg) => (
+              <div
+                key={pkg.credits}
+                className={`relative rounded-2xl p-8 transition-all ${
+                  pkg.popular
+                    ? "bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 text-white border-0 shadow-2xl md:scale-105 md:-mt-4 md:mb-4"
+                    : "bg-white border-2 border-gray-200 hover:border-pink-300 hover:shadow-lg"
+                }`}
+              >
+                {pkg.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-4 py-2 text-xs font-bold rounded-full bg-white text-pink-600 shadow-md">
+                    🔥 가장 인기
                   </div>
+                )}
+                
+                {pkg.discount > 0 && (
+                  <div className={`absolute top-6 right-6 px-3 py-1 text-xs font-bold rounded-full ${
+                    pkg.popular 
+                      ? "bg-white/20 text-white" 
+                      : "bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white"
+                  }`}>
+                    {pkg.discount}% 할인
+                  </div>
+                )}
+                
+                <div className="mb-8">
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className={`text-5xl font-bold ${pkg.popular ? "text-white" : "text-gray-900"}`}>
+                      {pkg.credits}
+                    </span>
+                    <span className={`text-2xl font-semibold ${pkg.popular ? "text-white/90" : "text-gray-600"}`}>
+                      크레딧
+                    </span>
+                  </div>
+                  <p className={`text-sm ${pkg.popular ? "text-white/80" : "text-gray-500"}`}>
+                    = {pkg.credits}개 영상 생성
+                  </p>
                 </div>
                 
-                <p className={`text-sm font-semibold mb-8 ${plan.highlight ? "text-white/95" : "bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent"}`}>
-                  영상 {plan.videos}
-                </p>
+                <div className="mb-8">
+                  <div className="flex items-baseline gap-1 mb-1">
+                    <span className={`text-3xl font-bold ${pkg.popular ? "text-white" : "text-gray-900"}`}>
+                      ₩{pkg.price.toLocaleString()}
+                    </span>
+                  </div>
+                  <p className={`text-sm ${pkg.popular ? "text-white/80" : "text-gray-600"}`}>
+                    개당 ₩{pkg.pricePerCredit.toLocaleString()}
+                  </p>
+                </div>
                 
-                {/* Features */}
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-3 text-sm ${plan.highlight ? "text-white/95" : "text-gray-600"}`}>
-                      <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                        plan.highlight ? "bg-white/20" : "bg-gradient-to-r from-pink-50 to-purple-50"
-                      }`}>
-                        <svg className={`w-3 h-3 ${plan.highlight ? "text-white" : "text-pink-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <span>{f}</span>
-                    </li>
-                  ))}
+                <ul className="space-y-3 mb-8">
+                  <li className={`flex items-center gap-3 text-sm ${pkg.popular ? "text-white/95" : "text-gray-700"}`}>
+                    <svg className={`w-5 h-5 shrink-0 ${pkg.popular ? "text-white" : "text-pink-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    워터마크 제거
+                  </li>
+                  <li className={`flex items-center gap-3 text-sm ${pkg.popular ? "text-white/95" : "text-gray-700"}`}>
+                    <svg className={`w-5 h-5 shrink-0 ${pkg.popular ? "text-white" : "text-pink-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    1080p 고화질
+                  </li>
+                  <li className={`flex items-center gap-3 text-sm ${pkg.popular ? "text-white/95" : "text-gray-700"}`}>
+                    <svg className={`w-5 h-5 shrink-0 ${pkg.popular ? "text-white" : "text-pink-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    모든 템플릿 사용
+                  </li>
+                  <li className={`flex items-center gap-3 text-sm ${pkg.popular ? "text-white/95" : "text-gray-700"}`}>
+                    <svg className={`w-5 h-5 shrink-0 ${pkg.popular ? "text-white" : "text-pink-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    상업적 이용 가능
+                  </li>
                 </ul>
                 
-                {/* CTA Button */}
                 <button
-                  onClick={() => handleSelect(plan.planId)}
-                  disabled={loading !== null}
-                  className={`w-full py-4 rounded-xl font-semibold text-base transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                    plan.highlight
-                      ? "bg-white text-pink-600 hover:bg-pink-50"
-                      : "bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:opacity-90 border-0"
+                  onClick={() => handlePurchase(pkg)}
+                  disabled={isLoading && selectedPackage === pkg}
+                  className={`w-full py-4 rounded-xl text-base font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    pkg.popular
+                      ? "bg-white text-pink-600 hover:bg-pink-50 shadow-md"
+                      : "bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:opacity-90 shadow-sm hover:shadow-md"
                   }`}
                 >
-                  {loading === plan.planId ? (
-                    <span className="inline-flex items-center gap-2">
-                      <div className={`w-4 h-4 border-2 rounded-full animate-spin ${
-                        plan.highlight ? "border-pink-600/30 border-t-pink-600" : "border-white/30 border-t-white"
-                      }`} />
+                  {isLoading && selectedPackage === pkg ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                       처리 중...
                     </span>
                   ) : (
-                    plan.cta
+                    "크레딧 충전하기"
                   )}
                 </button>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Trust Badges */}
-        <div className="bg-gray-50 rounded-2xl p-8 mb-20 border border-gray-200">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-50 border border-green-200 flex items-center justify-center">
-                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <span className="font-medium text-gray-900">안전한 결제</span>
-            </div>
-            
-            <div className="hidden sm:block w-px h-8 bg-gray-200" />
-            
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </div>
-              <span className="font-medium text-gray-900">언제든 해지 가능</span>
-            </div>
-            
-            <div className="hidden sm:block w-px h-8 bg-gray-200" />
-            
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 flex items-center justify-center">
-                <svg className="w-5 h-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-              </div>
-              <span className="font-medium text-gray-900">TossPayments 보안결제</span>
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ */}
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">자주 묻는 질문</h2>
-            <p className="text-gray-600">궁금한 점이 있으신가요?</p>
-          </div>
-          
-          <div className="space-y-3">
-            {[
-              { 
-                q: "무료 플랜에서 유료로 업그레이드하면?", 
-                a: "즉시 크레딧이 충전되고, 워터마크가 제거됩니다. 이전 영상의 워터마크도 제거할 수 있어요." 
-              },
-              { 
-                q: "결제는 어떻게 되나요?", 
-                a: "TossPayments를 통한 안전한 결제입니다. 카드, 간편결제 등 다양한 수단을 지원합니다." 
-              },
-              { 
-                q: "언제든 해지할 수 있나요?", 
-                a: "네, 언제든 해지 가능합니다. 해지 후에도 결제 기간까지는 서비스를 이용할 수 있어요." 
-              },
-              { 
-                q: "크레딧이 다음 달로 이월되나요?", 
-                a: "크레딧은 매월 초기화됩니다. 미사용 크레딧은 이월되지 않아요." 
-              },
-            ].map((faq) => (
-              <details key={faq.q} className="group bg-gray-50 rounded-xl cursor-pointer overflow-hidden border border-gray-200 hover:border-gray-300">
-                <summary className="flex items-center justify-between p-6 font-semibold text-gray-900 list-none transition-colors">
-                  <span>{faq.q}</span>
-                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="px-6 pb-6 text-sm text-gray-600 leading-relaxed border-t border-gray-200">
-                  <p className="pt-4">{faq.a}</p>
-                </div>
-              </details>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* CTA Section */}
-        <div className="text-center mt-20">
-          <div className="bg-gray-50 rounded-2xl p-12 border border-gray-200">
-            <div>
-              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
-                아직 고민 중이신가요?
-              </h3>
-              <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-                무료 플랜으로 먼저 경험해보세요. 카드 등록 없이 바로 시작할 수 있습니다.
+      {/* Features */}
+      <section className="px-4 py-16 md:py-24 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+              크레딧으로 이런 걸 할 수 있어요
+            </h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-2xl p-6 border border-gray-200">
+              <div className="text-4xl mb-4">✨</div>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">AI 숏폼 영상 생성</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                상품 사진 한 장으로 15초 숏폼 광고 영상 제작
               </p>
-              <a
-                href="/create"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold text-lg hover:opacity-90 transition-all shadow-lg"
-              >
-                <span>무료로 시작하기</span>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </a>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200">
+              <div className="text-4xl mb-4">🎨</div>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">다양한 템플릿</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                패션, 뷰티, 전자제품 등 업종별 맞춤 템플릿
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-200">
+              <div className="text-4xl mb-4">🚀</div>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">즉시 다운로드</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                생성 완료된 영상은 1080p로 바로 다운로드
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="px-4 py-16 md:py-24 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">자주 묻는 질문</h2>
+          </div>
+          
+          <div className="space-y-4">
+            <details className="group bg-gray-50 rounded-xl p-6 cursor-pointer border border-gray-200 hover:border-gray-300 transition-colors">
+              <summary className="flex items-center justify-between font-semibold text-gray-900 list-none">
+                <span>크레딧은 언제까지 사용할 수 있나요?</span>
+                <span className="ml-4 text-gray-400 group-open:rotate-45 transition-transform text-2xl leading-none">+</span>
+              </summary>
+              <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+                충전한 크레딧은 유효기간이 없습니다. 언제든지 원하실 때 사용하실 수 있습니다.
+              </p>
+            </details>
+            
+            <details className="group bg-gray-50 rounded-xl p-6 cursor-pointer border border-gray-200 hover:border-gray-300 transition-colors">
+              <summary className="flex items-center justify-between font-semibold text-gray-900 list-none">
+                <span>환불이 가능한가요?</span>
+                <span className="ml-4 text-gray-400 group-open:rotate-45 transition-transform text-2xl leading-none">+</span>
+              </summary>
+              <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+                결제 후 7일 이내 크레딧을 사용하지 않았다면 전액 환불이 가능합니다. 부분 사용 시에는 잔여분 일할 계산 환불을 지원합니다.
+              </p>
+            </details>
+            
+            <details className="group bg-gray-50 rounded-xl p-6 cursor-pointer border border-gray-200 hover:border-gray-300 transition-colors">
+              <summary className="flex items-center justify-between font-semibold text-gray-900 list-none">
+                <span>1크레딧으로 영상을 몇 개 만들 수 있나요?</span>
+                <span className="ml-4 text-gray-400 group-open:rotate-45 transition-transform text-2xl leading-none">+</span>
+              </summary>
+              <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+                1크레딧 = 1개의 영상입니다. 영상 하나를 생성할 때마다 1크레딧이 차감됩니다.
+              </p>
+            </details>
+            
+            <details className="group bg-gray-50 rounded-xl p-6 cursor-pointer border border-gray-200 hover:border-gray-300 transition-colors">
+              <summary className="flex items-center justify-between font-semibold text-gray-900 list-none">
+                <span>결제 수단은 무엇이 있나요?</span>
+                <span className="ml-4 text-gray-400 group-open:rotate-45 transition-transform text-2xl leading-none">+</span>
+              </summary>
+              <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+                토스페이먼츠를 통해 신용카드, 체크카드, 계좌이체, 간편결제(카카오페이, 네이버페이 등) 모두 가능합니다.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-4 py-16 md:py-24 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+            지금 바로 시작하세요
+          </h2>
+          <p className="text-gray-600 text-lg mb-8">
+            첫 가입 시 1크레딧 무료 제공
+          </p>
+          <a
+            href="/create"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-semibold text-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
+          >
+            <span>영상 만들기</span>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+        </div>
+      </section>
     </div>
   );
 }

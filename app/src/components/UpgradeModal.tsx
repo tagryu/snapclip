@@ -1,24 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-const plans = [
-  {
-    name: "Basic",
-    price: "₩9,900",
-    videos: "30개/월",
-    features: ["워터마크 제거", "1080p 해상도", "전체 템플릿", "AI 카피라이팅"],
-    planId: "basic" as const,
-  },
-  {
-    name: "Pro",
-    price: "₩29,900",
-    videos: "무제한",
-    features: ["모든 Basic 기능", "4K 해상도", "커스텀 브랜딩", "우선 렌더링", "API 액세스"],
-    planId: "pro" as const,
-  },
-];
-
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -26,85 +7,65 @@ interface Props {
   creditsLimit?: number;
 }
 
-export default function UpgradeModal({ isOpen, onClose, creditsUsed = 3, creditsLimit = 3 }: Props) {
-  const [loading, setLoading] = useState<string | null>(null);
-
+export default function UpgradeModal({ isOpen, onClose, creditsUsed = 0, creditsLimit = 0 }: Props) {
   if (!isOpen) return null;
-
-  const handleUpgrade = async (planId: string) => {
-    setLoading(planId);
-    try {
-      const res = await fetch("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
-      });
-      const data = await res.json();
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      }
-    } catch {
-      // handle error
-    } finally {
-      setLoading(null);
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-white border border-card-border rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95">
+      <div className="relative w-full max-w-md bg-white border border-gray-200 rounded-2xl p-8 shadow-2xl animate-in fade-in zoom-in-95">
         {/* Close */}
-        <button onClick={onClose} className="absolute top-4 right-4 text-muted hover:text-foreground transition-colors">
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        {/* Header */}
+        {/* Icon */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full gradient-bg mb-4 shadow-lg">
-            <span className="text-2xl">🚀</span>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 mb-4 shadow-lg">
+            <span className="text-3xl">💎</span>
           </div>
-          <h2 className="text-xl font-bold mb-2 text-foreground">크레딧을 모두 사용했어요</h2>
-          <p className="text-sm text-muted">
-            이번 달 {creditsUsed}/{creditsLimit}개를 사용했습니다. 업그레이드하고 더 많은 영상을 만들어보세요!
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">크레딧이 부족해요</h2>
+          <p className="text-gray-600">
+            크레딧을 충전하고 더 많은 영상을 만들어보세요!
           </p>
         </div>
 
-        {/* Plans */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          {plans.map((plan) => (
-            <div key={plan.planId} className="p-4 rounded-xl border border-card-border bg-surface">
-              <h3 className="font-bold mb-1 text-foreground">{plan.name}</h3>
-              <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-2xl font-bold gradient-text">{plan.price}</span>
-                <span className="text-xs text-muted">/월</span>
-              </div>
-              <p className="text-xs text-ig-blue font-semibold mb-3">영상 {plan.videos}</p>
-              <ul className="space-y-1.5 mb-4">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-1.5 text-xs text-muted">
-                    <svg className="w-3 h-3 text-ig-blue shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => handleUpgrade(plan.planId)}
-                disabled={loading !== null}
-                className="w-full py-2 rounded-lg bg-ig-blue text-white text-sm font-semibold hover:bg-ig-blue/90 transition-colors disabled:opacity-50"
-              >
-                {loading === plan.planId ? "처리 중..." : `${plan.name} 시작하기`}
-              </button>
-            </div>
-          ))}
+        {/* Current Status */}
+        <div className="bg-gradient-to-r from-orange-50 via-pink-50 to-purple-50 rounded-xl p-4 mb-6 border border-pink-200">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">보유 크레딧</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+              {creditsLimit}
+            </span>
+          </div>
+          <div className="text-xs text-gray-500 text-center">
+            영상을 만들려면 최소 1크레딧이 필요합니다
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="space-y-3">
+          <a
+            href="/pricing"
+            className="block w-full py-3 px-6 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white text-center font-semibold hover:opacity-90 transition-all shadow-md"
+          >
+            💎 크레딧 충전하기
+          </a>
+          <button
+            onClick={onClose}
+            className="block w-full py-3 px-6 rounded-xl border border-gray-300 text-gray-700 text-center font-semibold hover:bg-gray-50 transition-all"
+          >
+            나중에
+          </button>
         </div>
 
         {/* Trust badges */}
-        <div className="flex items-center justify-center gap-4 text-xs text-muted">
+        <div className="flex items-center justify-center gap-4 text-xs text-gray-500 mt-6 pt-6 border-t border-gray-200">
           <span className="flex items-center gap-1">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -113,13 +74,7 @@ export default function UpgradeModal({ isOpen, onClose, creditsUsed = 3, credits
           </span>
           <span className="flex items-center gap-1">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            언제든 해지
-          </span>
-          <span className="flex items-center gap-1">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             TossPayments
           </span>

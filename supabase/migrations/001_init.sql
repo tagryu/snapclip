@@ -1,109 +1,132 @@
--- SnapClip 초기 스키마
--- Supabase Auth를 사용하므로 auth.users는 자동 생성됨
+-- SnapClip Initial Schema Migration
+-- Profiles, Credit Transactions, Videos tables + RLS policies
 
--- ============================================================
--- 1. users (프로필 + 요금제 + 크레딧)
--- ============================================================
-CREATE TABLE IF NOT EXISTS public.users (
+-- 1. Profiles Table
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT NOT NULL,
   name TEXT,
   avatar_url TEXT,
-  plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'basic', 'pro')),
-  credits_used INTEGER NOT NULL DEFAULT 0,
-  credits_limit INTEGER NOT NULL DEFAULT 3,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  credits INTEGER DEFAULT 0 NOT NULL,
+  total_credits_purchased INTEGER DEFAULT 0 NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- 새 유저 가입 시 자동 프로필 생성 트리거
+-- 2. Credit Transactions Table
+CREATE TABLE IF NOT EXISTS public.credit_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  amount INTEGER NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('purchase', 'usage', 'refund', 'bonus')),
+  description TEXT,
+  payment_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+-- 3. Videos Table
+CREATE TABLE IF NOT EXISTS public.videos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'generating', 'completed', 'failed')),
+  template TEXT,
+  aspect_ratio TEXT,
+  product_name TEXT,
+  product_price TEXT,
+  product_tags TEXT,
+  video_url TEXT,
+  thumbnail_url TEXT,
+  duration_seconds INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+-- 4. Auto-update updated_at trigger function
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Apply trigger to profiles
+CREATE TRIGGER update_profiles_updated_at
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Apply trigger to videos
+CREATE TRIGGER update_videos_updated_at
+  BEFORE UPDATE ON public.videos
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- 5. Auth trigger: Auto-create profile with bonus credit on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, name, avatar_url)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'name', NEW.raw_user_meta_data->>'full_name'),
-    NEW.raw_user_meta_data->>'avatar_url'
-  );
+  INSERT INTO public.profiles (id, email, credits, created_at, updated_at)
+  VALUES (NEW.id, NEW.email, 1, NOW(), NOW());
+  
+  -- Record bonus credit transaction
+  INSERT INTO public.credit_transactions (user_id, amount, type, description, created_at)
+  VALUES (NEW.id, 1, 'bonus', '회원가입 보너스 크레딧', NOW());
+  
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
 
--- ============================================================
--- 2. projects (영상 생성 기록)
--- ============================================================
-CREATE TABLE IF NOT EXISTS public.projects (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  product_name TEXT NOT NULL,
-  product_price TEXT,
-  product_features TEXT[],
-  template TEXT NOT NULL DEFAULT 'simple',
-  aspect_ratio TEXT NOT NULL DEFAULT '9:16',
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
-  video_url TEXT,
-  thumbnail_url TEXT,
-  ai_copy JSONB,
-  duration_sec NUMERIC,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
+-- 6. RLS Policies
 
-CREATE INDEX IF NOT EXISTS idx_projects_user_id ON public.projects(user_id);
-CREATE INDEX IF NOT EXISTS idx_projects_status ON public.projects(status);
+-- Enable RLS
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.credit_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.videos ENABLE ROW LEVEL SECURITY;
 
--- ============================================================
--- 3. payments (결제 내역)
--- ============================================================
-CREATE TABLE IF NOT EXISTS public.payments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  order_id TEXT NOT NULL UNIQUE,
-  payment_key TEXT,
-  amount INTEGER NOT NULL,
-  plan TEXT NOT NULL CHECK (plan IN ('basic', 'pro')),
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'failed', 'cancelled')),
-  provider TEXT NOT NULL DEFAULT 'tosspayments',
-  metadata JSONB,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
+-- Profiles: Users can read and update their own profile
+CREATE POLICY "Users can view own profile"
+  ON public.profiles FOR SELECT
+  USING (auth.uid() = id);
 
-CREATE INDEX IF NOT EXISTS idx_payments_user_id ON public.payments(user_id);
-CREATE INDEX IF NOT EXISTS idx_payments_order_id ON public.payments(order_id);
+CREATE POLICY "Users can update own profile"
+  ON public.profiles FOR UPDATE
+  USING (auth.uid() = id);
 
--- ============================================================
--- 4. Row Level Security
--- ============================================================
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+-- Credit Transactions: Users can view their own transactions
+CREATE POLICY "Users can view own transactions"
+  ON public.credit_transactions FOR SELECT
+  USING (auth.uid() = user_id);
 
--- users: 자기 프로필만 조회/수정
-CREATE POLICY "Users can view own profile" ON public.users FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE USING (auth.uid() = id);
+-- Credit Transactions: Service role can insert (for API)
+CREATE POLICY "Service can insert transactions"
+  ON public.credit_transactions FOR INSERT
+  WITH CHECK (true);
 
--- projects: 자기 프로젝트만
-CREATE POLICY "Users can view own projects" ON public.projects FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own projects" ON public.projects FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Videos: Users can view their own videos
+CREATE POLICY "Users can view own videos"
+  ON public.videos FOR SELECT
+  USING (auth.uid() = user_id);
 
--- payments: 자기 결제만
-CREATE POLICY "Users can view own payments" ON public.payments FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own payments" ON public.payments FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Videos: Users can insert their own videos
+CREATE POLICY "Users can insert own videos"
+  ON public.videos FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
 
--- ============================================================
--- 5. 월간 크레딧 리셋 함수 (Supabase cron으로 매월 1일 실행)
--- ============================================================
-CREATE OR REPLACE FUNCTION public.reset_monthly_credits()
-RETURNS void AS $$
-BEGIN
-  UPDATE public.users SET credits_used = 0, updated_at = now();
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Videos: Users can update their own videos
+CREATE POLICY "Users can update own videos"
+  ON public.videos FOR UPDATE
+  USING (auth.uid() = user_id);
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_credit_transactions_user_id ON public.credit_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_credit_transactions_created_at ON public.credit_transactions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_videos_user_id ON public.videos(user_id);
+CREATE INDEX IF NOT EXISTS idx_videos_created_at ON public.videos(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_videos_status ON public.videos(status);

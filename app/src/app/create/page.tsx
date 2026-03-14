@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { getUserCredits } from "@/lib/credits";
 import ProgressAnimation from "@/components/ProgressAnimation";
 import UpgradeModal from "@/components/UpgradeModal";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -124,8 +123,13 @@ export default function CreatePage() {
 
     if (user) {
       try {
-        const credits = await getUserCredits(user.id);
-        if (credits.credits_used >= credits.credits_limit) {
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("credits")
+          .eq("id", user.id)
+          .single();
+        
+        if (!error && profile && profile.credits < 1) {
           setShowUpgrade(true);
           return;
         }
@@ -138,11 +142,14 @@ export default function CreatePage() {
     try {
       const imageUrls = await uploadImagesToStorage();
 
+      // Get auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(user ? {} : {}),
+          ...(session ? { "Authorization": `Bearer ${session.access_token}` } : {}),
         },
         body: JSON.stringify({
           productName,
